@@ -1,13 +1,20 @@
 import * as querystring from "querystring";
 import * as http from "http";
-import * as md5 from "md5";
+import md5 from "md5";
 import {appId, key} from './private'
 
-module.exports = (word) => {
+const errorMap:ErrorMap = {
+  52000: '成功',
+  52001: '请求超时'
+}
+
+type ErrorMap = {
+  [key: string]: string
+}
+
+module.exports = (word: string) => {
   return new Promise((resolve) => {
     const salt = Math.random()
-
-    let resData
 
     if(/[A-Za-z]/.test(word[0])){}
 
@@ -27,15 +34,11 @@ module.exports = (word) => {
       method: 'get',
     };
 
-    const errorMap = {
-      52000: '成功',
-      52001: '请求超时'
-    }
-
     const req = http.request(options, (res) => {
       // console.log(`STATUS: ${res.statusCode}`);
       // console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
       res.setEncoding('utf8');
+      let resData:Buffer
       res.on('data', (chunk) => {
         resData = chunk
       });
@@ -49,7 +52,7 @@ module.exports = (word) => {
             dst: string;
           }[]
         }
-        const object: BaiduResult = JSON.parse(resData)
+        const object: BaiduResult = JSON.parse(resData.toString() )
 
         if(object.error_code) {
           resolve(errorMap[object.error_code] || object.error_code)
