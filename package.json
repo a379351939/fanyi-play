@@ -1,7 +1,7 @@
 {
   "name": "node-play-fanyi",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/cli.js",
   "bin": {
     "fy": "dist/cli.js"
   },
